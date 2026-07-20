@@ -29,7 +29,7 @@ export default function Navbar() {
           <Link to="/search" className="btn-ghost hidden sm:inline-flex">
             Explore
           </Link>
-          <Link to="/host" className="btn-ghost hidden sm:inline-flex">
+          <Link to="/become-a-host" className="btn-ghost hidden sm:inline-flex">
             Become a Host
           </Link>
           <Link to="/dashboard" className="btn-ghost hidden sm:inline-flex" aria-label="Wishlist">

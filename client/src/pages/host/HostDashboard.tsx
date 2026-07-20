@@ -1,9 +1,8 @@
-import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
 import { Building2, CalendarCheck, Percent, TrendingUp, Users } from "lucide-react";
 import { api } from "@/api/client";
 import StatCard from "@/components/StatCard";
-import AddPropertyModal from "@/features/host/AddPropertyModal";
 import { money } from "@/lib/format";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -24,7 +23,7 @@ const TABS = [
 
 export default function HostDashboard() {
   const { user } = useAuth();
-  const [showAdd, setShowAdd] = useState(false);
+  const navigate = useNavigate();
   const { data } = useQuery({
     queryKey: ["host-dashboard"],
     queryFn: async () => (await api.get("/host/dashboard")).data,
@@ -43,12 +42,10 @@ export default function HostDashboard() {
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-extrabold">Host dashboard</h1>
-        <button className="btn-primary" onClick={() => setShowAdd(true)}>
+        <button className="btn-primary" onClick={() => navigate("/become-a-host")}>
           + Add property
         </button>
       </div>
-
-      {showAdd && <AddPropertyModal onClose={() => setShowAdd(false)} />}
 
       <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
         <StatCard icon={TrendingUp} label="Revenue" value={money(data?.revenue, "INR")} accent="emerald" />

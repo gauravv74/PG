@@ -108,6 +108,59 @@ export interface Page<T> {
   has_next: boolean;
 }
 
+// ---------- Map search ----------
+
+/** A single map marker payload (lightweight, from GET /properties/map). */
+export interface MapPin {
+  id: string;
+  slug: string;
+  name: string;
+  latitude: number;
+  longitude: number;
+  geohash?: string | null;
+  min_price?: number | null;
+  currency: string;
+  avg_rating: number;
+  room_type?: RoomType | null;
+  cover_image_url?: string | null;
+  is_verified: boolean;
+}
+
+export interface MapResponse {
+  items: MapPin[];
+  total: number;
+  truncated: boolean;
+}
+
+/** Rich card for the synchronized list panel (from GET /properties). */
+export interface PropertyListCard extends PropertyCard {
+  address?: string | null;
+  area?: string | null;
+  min_deposit?: number | null;
+  available_beds: number;
+  room_types: RoomType[];
+  amenities: string[];
+  bills_included: boolean;
+  distance_km?: number | null;
+}
+
+/** Google Maps viewport expressed as lat/lng extents. */
+export interface MapBounds {
+  north: number;
+  south: number;
+  east: number;
+  west: number;
+}
+
+export type MapSort =
+  | "recommended"
+  | "lowest_price"
+  | "highest_price"
+  | "highest_rated"
+  | "newest"
+  | "nearest"
+  | "most_popular";
+
 export interface User {
   id: string;
   email: string;
@@ -128,15 +181,29 @@ export interface SearchFilters {
   property_type?: PropertyType[];
   gender?: string;
   bills_included?: boolean;
+  food_included?: boolean;
   wifi?: boolean;
   gym?: boolean;
   laundry?: boolean;
   parking?: boolean;
+  study_room?: boolean;
+  study_table?: boolean;
   ac?: boolean;
   instant_booking?: boolean;
   verified_only?: boolean;
+  deposit_max?: number;
+  available_only?: boolean;
   max_distance_km?: number;
   sort?: string;
   page?: number;
   page_size?: number;
+
+  // Map viewport (bounding-box search)
+  north?: number;
+  south?: number;
+  east?: number;
+  west?: number;
+  zoom?: number;
+  lat?: number;
+  lng?: number;
 }

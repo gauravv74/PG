@@ -13,9 +13,11 @@ class SortOption(str, Enum):
     lowest_price = "lowest_price"
     highest_price = "highest_price"
     closest = "closest"
+    nearest = "nearest"  # alias of closest, using search origin / viewport center
     highest_rated = "highest_rated"
     newest = "newest"
     most_popular = "most_popular"
+    recommended = "recommended"
 
 
 class SearchFilters(BaseModel):
@@ -41,11 +43,13 @@ class SearchFilters(BaseModel):
 
     # Amenity flags
     bills_included: bool | None = None
+    food_included: bool | None = None
     wifi: bool | None = None
     gym: bool | None = None
     laundry: bool | None = None
     parking: bool | None = None
     study_room: bool | None = None
+    study_table: bool | None = None
     ac: bool | None = None
     heating: bool | None = None
     private_bathroom: bool | None = None
@@ -56,9 +60,24 @@ class SearchFilters(BaseModel):
     cctv: bool | None = None
     elevator: bool | None = None
 
+    # Deposit / availability
+    deposit_max: float | None = None
+    available_only: bool | None = None
+
     # Proximity
     max_distance_km: float | None = None
     max_commute_minutes: int | None = None
+
+    # Map viewport / bounding-box search (north, south latitudes; east, west longitudes).
+    north: float | None = Field(default=None, ge=-90, le=90)
+    south: float | None = Field(default=None, ge=-90, le=90)
+    east: float | None = Field(default=None, ge=-180, le=180)
+    west: float | None = Field(default=None, ge=-180, le=180)
+    zoom: int | None = Field(default=None, ge=0, le=22)
+
+    @property
+    def has_bbox(self) -> bool:
+        return None not in (self.north, self.south, self.east, self.west)
 
     # Booking prefs
     instant_booking: bool | None = None

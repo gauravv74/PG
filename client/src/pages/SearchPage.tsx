@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
+import { Map as MapIcon } from "lucide-react";
 import PropertyCard from "@/components/PropertyCard";
 import FilterSidebar from "@/features/search/FilterSidebar";
 import { useSearch } from "@/api/hooks";
@@ -64,17 +65,25 @@ export default function SearchPage() {
               {isLoading ? "Searching…" : `${total} homes found`}
               {filters.query ? ` for “${filters.query}”` : ""}
             </p>
-            <select
-              value={filters.sort}
-              onChange={(e) => patch({ sort: e.target.value })}
-              className="input w-auto"
-            >
-              {SORTS.map((s) => (
-                <option key={s.key} value={s.key}>
-                  {s.label}
-                </option>
-              ))}
-            </select>
+            <div className="flex items-center gap-2">
+              <Link
+                to={{ pathname: "/map", search: params.toString() }}
+                className="btn-outline whitespace-nowrap"
+              >
+                <MapIcon size={16} /> View on map
+              </Link>
+              <select
+                value={filters.sort}
+                onChange={(e) => patch({ sort: e.target.value })}
+                className="input w-auto"
+              >
+                {SORTS.map((s) => (
+                  <option key={s.key} value={s.key}>
+                    {s.label}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
 
           {items.length === 0 && !isLoading ? (

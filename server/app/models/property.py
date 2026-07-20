@@ -6,6 +6,7 @@ from sqlalchemy import (
     Enum,
     Float,
     ForeignKey,
+    Index,
     Integer,
     Numeric,
     String,
@@ -25,6 +26,16 @@ from app.models.enums import (
 
 class Property(Base, TimestampMixin):
     __tablename__ = "properties"
+    __table_args__ = (
+        # Composite index accelerates bounding-box (viewport) range scans:
+        #   WHERE latitude BETWEEN ? AND ? AND longitude BETWEEN ? AND ?
+        Index("ix_properties_lat_lng", "latitude", "longitude"),
+        # Prefix scans on geohash support cheap proximity bucketing / clustering
+        # and are the migration path toward a PostGIS GiST index later.
+        Index("ix_properties_geohash", "geohash"),
+        # Hot path for the map: active listings inside a city, ordered by price.
+        Index("ix_properties_status_city_price", "status", "city_id", "min_price"),
+    )
 
     id: Mapped[str] = uuid_pk()
     host_id: Mapped[str] = mapped_column(ForeignKey("users.id"), index=True, nullable=False)
@@ -43,6 +54,9 @@ class Property(Base, TimestampMixin):
     postal_code: Mapped[str | None] = mapped_column(String(20))
     latitude: Mapped[float] = mapped_column(Float, index=True, nullable=False)
     longitude: Mapped[float] = mapped_column(Float, index=True, nullable=False)
+    # Geohash of (lat, lng); populated on write. Enables prefix-based proximity
+    # bucketing and is indexed for fast lookups (see __table_args__).
+    geohash: Mapped[str | None] = mapped_column(String(12))
 
     # Denormalised for fast search/sort (Module 2, 16)
     min_price: Mapped[float | None] = mapped_column(Numeric(12, 2), index=True)

@@ -1,4 +1,5 @@
 import {
+  keepPreviousData,
   useInfiniteQuery,
   useMutation,
   useQuery,
@@ -7,9 +8,11 @@ import {
 import { api } from "./client";
 import type {
   City,
+  MapResponse,
   Page,
   PropertyCard,
   PropertyDetail,
+  PropertyListCard,
   SearchFilters,
   University,
 } from "@/types";
@@ -67,10 +70,11 @@ export const useFaqs = () =>
   useQuery({ queryKey: ["faqs"], queryFn: async () => (await api.get("/discovery/faqs")).data });
 
 // ---------- Search (Module 2, infinite scroll — Module 16) ----------
-function toParams(filters: SearchFilters) {
+export function toParams(filters: SearchFilters) {
   const p = new URLSearchParams();
   Object.entries(filters).forEach(([k, v]) => {
     if (v === undefined || v === null || v === "") return;
+    if (typeof v === "boolean" && !v) return; // omit falsey flags
     if (Array.isArray(v)) v.forEach((x) => p.append(k, String(x)));
     else p.append(k, String(v));
   });
@@ -81,9 +85,44 @@ export const useSearch = (filters: SearchFilters) =>
   useInfiniteQuery({
     queryKey: ["search", filters],
     initialPageParam: 1,
-    queryFn: async ({ pageParam }) => {
+    queryFn: async ({ pageParam, signal }) => {
       const params = toParams({ ...filters, page: pageParam as number });
-      return (await api.get<Page<PropertyCard>>(`/search?${params.toString()}`)).data;
+      return (await api.get<Page<PropertyCard>>(`/search?${params.toString()}`, { signal })).data;
+    },
+    getNextPageParam: (last) => (last.has_next ? last.page + 1 : undefined),
+  });
+
+// ---------- Map search (synchronized list + markers) ----------
+
+/**
+ * Lightweight markers for the current viewport. `enabled` lets callers hold off
+ * until a bounding box is known. Request cancellation is automatic: TanStack
+ * Query aborts the in-flight axios request (via `signal`) whenever the query key
+ * changes (pan/zoom/filter), so only the latest viewport wins.
+ */
+export const useMapPins = (filters: SearchFilters, enabled = true) =>
+  useQuery({
+    queryKey: ["map-pins", filters],
+    enabled,
+    staleTime: 30_000,
+    placeholderData: keepPreviousData, // keep old markers visible while refetching
+    queryFn: async ({ signal }) => {
+      const params = toParams(filters);
+      return (await api.get<MapResponse>(`/properties/map?${params.toString()}`, { signal })).data;
+    },
+  });
+
+/** Paginated rich cards for the list panel (infinite scroll + cancellation). */
+export const usePropertyList = (filters: SearchFilters, enabled = true) =>
+  useInfiniteQuery({
+    queryKey: ["property-list", filters],
+    enabled,
+    initialPageParam: 1,
+    placeholderData: keepPreviousData,
+    queryFn: async ({ pageParam, signal }) => {
+      const params = toParams({ ...filters, page: pageParam as number });
+      return (await api.get<Page<PropertyListCard>>(`/properties?${params.toString()}`, { signal }))
+        .data;
     },
     getNextPageParam: (last) => (last.has_next ? last.page + 1 : undefined),
   });

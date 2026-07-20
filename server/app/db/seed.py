@@ -4,6 +4,7 @@ from __future__ import annotations
 import random
 from datetime import date, timedelta
 
+from app.core.geo import geohash_encode
 from app.core.security import hash_password
 from app.db.base import Base
 from app.db.session import SessionLocal, engine
@@ -117,6 +118,8 @@ def run() -> None:
         for i in range(6):
             ptype = random.choice(list(PropertyType))
             price = random.choice([9000, 12000, 15000, 18000, 22000, 30000])
+            plat = lat + random.uniform(-0.03, 0.03)
+            plng = lng + random.uniform(-0.03, 0.03)
             prop = Property(
                 host_id=host.id, city_id=city.id,
                 name=f"{cname} Student Living {i + 1}",
@@ -126,8 +129,9 @@ def run() -> None:
                 description="Bright, fully-furnished student accommodation close to campus, "
                             "with high-speed WiFi, study spaces, and a vibrant community.",
                 address=f"{i + 1} Campus Road, {cname}",
-                latitude=lat + random.uniform(-0.03, 0.03),
-                longitude=lng + random.uniform(-0.03, 0.03),
+                latitude=plat,
+                longitude=plng,
+                geohash=geohash_encode(plat, plng),
                 min_price=price, currency="INR" if country == "India" else "GBP",
                 avg_rating=round(random.uniform(4.0, 5.0), 1),
                 review_count=random.randint(10, 240),

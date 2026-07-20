@@ -94,6 +94,53 @@ class PropertyCard(ORMModel):
     instant_booking: bool
 
 
+class PropertyMapPin(ORMModel):
+    """Ultra-light payload for a single map marker (Map Search).
+
+    Deliberately tiny so the /properties/map endpoint can return thousands of
+    markers in one response with minimal bandwidth.
+    """
+
+    id: str
+    slug: str
+    name: str
+    latitude: float
+    longitude: float
+    geohash: str | None = None
+    min_price: float | None = None
+    currency: str
+    avg_rating: float
+    room_type: RoomType | None = None
+    cover_image_url: str | None = None
+    is_verified: bool
+
+
+class PropertyMapResponse(BaseModel):
+    """Marker payload + count for the current viewport."""
+
+    items: list[PropertyMapPin]
+    total: int
+    truncated: bool = False  # True when total > returned markers (client should cluster/zoom)
+
+
+class PropertyListCard(PropertyCard):
+    """Rich card for the synchronized list panel (Map Search).
+
+    Extends the compact card with fields the design calls for: address/area,
+    deposit, available beds, room types, amenities and (optional) distance from
+    the searched location.
+    """
+
+    address: str | None = None
+    area: str | None = None
+    min_deposit: float | None = None
+    available_beds: int = 0
+    room_types: list[RoomType] = []
+    amenities: list[str] = []
+    bills_included: bool = False
+    distance_km: float | None = None  # from search origin / viewport center when known
+
+
 class PropertyDetail(PropertyCard):
     """Full property detail (Module 3)."""
 
