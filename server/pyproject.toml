@@ -1,0 +1,57 @@
+[project]
+name = "uninest-server"
+version = "0.1.0"
+description = "UniNest — Student Accommodation Platform API"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi>=0.111",
+    "uvicorn[standard]>=0.30",
+    "sqlalchemy>=2.0",
+    "alembic>=1.13",
+    "psycopg[binary]>=3.1",
+    "pydantic>=2.7",
+    "pydantic-settings>=2.3",
+    "python-jose[cryptography]>=3.3",
+    "passlib[argon2]>=1.7",
+    "python-multipart>=0.0.9",
+    "redis>=5.0",
+    "celery>=5.4",
+    "httpx>=0.27",
+    "cloudinary>=1.40",
+    "google-auth>=2.30",
+    "email-validator>=2.1",
+    "tenacity>=8.4",
+    "orjson>=3.10",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.2",
+    "pytest-asyncio>=0.23",
+    "pytest-cov>=5.0",
+    "ruff>=0.5",
+    "mypy>=1.10",
+    "faker>=26.0",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "C4"]
+# B008: FastAPI intentionally uses function calls (Depends/File) in argument defaults.
+# UP042: keep `str, Enum` for broad serialization compatibility across tooling.
+ignore = ["B008", "UP042"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+addopts = "-q"
+testpaths = ["tests"]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["app*"]

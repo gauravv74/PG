@@ -1,0 +1,19 @@
+# Node / frontend
+node_modules/
+client/dist/
+client/.env
+client/.env.local
+
+# Python / backend
+__pycache__/
+*.py[cod]
+.venv/
+server/.env
+server/.pytest_cache/
+server/.ruff_cache/
+server/.coverage
+*.egg-info/
+
+# Misc
+*.log
+.DS_Store

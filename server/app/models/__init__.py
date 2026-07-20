@@ -1,0 +1,98 @@
+"""Import all models so SQLAlchemy + Alembic can discover them."""
+from app.db.base import Base
+from app.models.booking import (
+    Booking,
+    Coupon,
+    CouponRedemption,
+    Invoice,
+    Payment,
+    Refund,
+    RentalAgreement,
+)
+from app.models.engagement import (
+    FAQ,
+    AuditLog,
+    BlogPost,
+    Notification,
+    PushSubscription,
+    RecentlyViewed,
+    SavedSearch,
+    SupportTicket,
+    Testimonial,
+    WishlistItem,
+)
+from app.models.future import (
+    LoyaltyTransaction,
+    MaintenanceRequest,
+    MarketplaceItem,
+    RoommateProfile,
+    SplitRent,
+)
+from app.models.location import City, University
+from app.models.messaging import Conversation, Message, conversation_participants
+from app.models.property import (
+    Amenity,
+    NearbyPOI,
+    Offer,
+    Policy,
+    Property,
+    PropertyAmenity,
+    PropertyFAQ,
+    PropertyImage,
+    PropertyUniversity,
+    Verification,
+)
+from app.models.review import Review, ReviewPhoto, ReviewReply
+from app.models.room import Room, RoomAvailability, RoomPricing
+from app.models.user import Document, HostProfile, Referral, User
+
+__all__ = [
+    "Base",
+    "User",
+    "HostProfile",
+    "Document",
+    "Referral",
+    "City",
+    "University",
+    "Property",
+    "PropertyImage",
+    "Amenity",
+    "PropertyAmenity",
+    "PropertyUniversity",
+    "NearbyPOI",
+    "Offer",
+    "Policy",
+    "PropertyFAQ",
+    "Verification",
+    "Room",
+    "RoomAvailability",
+    "RoomPricing",
+    "Booking",
+    "Payment",
+    "Invoice",
+    "Refund",
+    "Coupon",
+    "CouponRedemption",
+    "RentalAgreement",
+    "Review",
+    "ReviewPhoto",
+    "ReviewReply",
+    "Conversation",
+    "Message",
+    "conversation_participants",
+    "WishlistItem",
+    "SavedSearch",
+    "RecentlyViewed",
+    "Notification",
+    "PushSubscription",
+    "SupportTicket",
+    "AuditLog",
+    "BlogPost",
+    "Testimonial",
+    "FAQ",
+    "RoommateProfile",
+    "SplitRent",
+    "MarketplaceItem",
+    "MaintenanceRequest",
+    "LoyaltyTransaction",
+]
